@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset='utf-8'>
+	<meta name='viewport' content='width=device-width,initial-scale=1'>
+
+	<title>Svelte app</title>
+
+	<link rel='icon' type='image/png' href='/favicon.png'>
+	<link rel='stylesheet' href='dist/hello-svelte.css'>
+	<Script src='https://unpkg.com/@webcomponents/webcomponentsjs@2.4.3/webcomponents-loader.js'></Script>
+	<script src='dist/hello-svelte.js'></script>
+  <div id='hello'>
+		<span slot='helloSlot'>Hello Slot</span>
+	</div>
+  <div id='hello2'></div>
+	("!!!" passed in externally from non-svelte parent JS/HTML)
+	<script>
+	var helloSvelte = window.Hello({
+		target: document.querySelector('#hello'),
+		hydrate: true,
+		props: {exclamation:'!!!'}
+	});
+
+	// receive message 
+	if (!helloSvelte.$on) helloSvelte.$on = this.addEventListener // svelte components have '$on' - custom elements have addEventListener
+	
+	helloSvelte.$on('helloMessage', function(event) {
+		console.log('passed out from svelte component:', event.detail);
+
+
+		if (helloSvelte.$set) 
+			helloSvelte.$set({exclamation:'-- (check the console :))'}) // set property from outside (only needed if accessors:false or NOT a custom-tag)
+		helloSvelte.exclamation = '--- check the CONSOLE!'
+
+		document.getElementById('hello2').innerHTML='<hello-element><div slot="helloSlot">test me</div></hello-element>'
+		document.getElementById('hello2').children[0].exclamation = ':) :)'
+
+	});
+	
+	</script>
+</head>
+
+<body>
+</body>
+</html>
